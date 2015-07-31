@@ -41,6 +41,23 @@ def fetch_infinitely():
         print "Putting datapoint"
         put_datapoint()
 
+
+# Puts a datapoint into the InfluxDB
+# The JSON format is
+#     json_body = [
+#         {
+#             "measurement": "cpus",
+#             "tags": {
+#                 "id": "uuid1",
+#                 "frameworkId": "2015-...",
+#                 "what": "TASK_STARTED"
+#             },
+#             "time": datetime.datetime.utcnow(),
+#             "fields": {
+#                 "value": 0.64
+#             }
+#         }
+#     ]
 def put_datapoint():
     json_body = [
         {
