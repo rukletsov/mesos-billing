@@ -15,7 +15,8 @@ shutting_down = False
 last_cpus_value = 0
 
 # Mesos constants.
-mesos_endpoint = 'http://172.18.6.177:5050/accounting'
+mesos_endpoint = 'http://172.18.6.178:5050/accounting'
+mesos_fetch_interval = 5
 
 # InfluxDB constants.
 user = 'user'
@@ -72,7 +73,8 @@ def fetch_infinitely():
 
         data = fetch_mesos()
         process_accounting_data(data)
-        time.sleep(1)
+
+        time.sleep(mesos_fetch_interval)
 
 
 # Puts a datapoint into the InfluxDB
@@ -103,21 +105,20 @@ if __name__ == "__main__":
 
     client = InfluxDBClient(influx_host, influx_port, user, password, dbname)
 
-    print("Create database: " + dbname)
+    print("Drop database: " + dbname)
     client.drop_database(dbname)
+
+    print("Create database: " + dbname)
     client.create_database(dbname)
 
-    data = fetch_mesos()
-    process_accounting_data(data)
+#     data = fetch_mesos()
+#     process_accounting_data(data)
 
-#    fetch_thread = Thread(target = fetch_infinitely, args = ())
-#    fetch_thread.start()
+    fetch_thread = Thread(target = fetch_infinitely, args = ())
+    fetch_thread.start()
 
-#    while fetch_thread.is_alive():
-#        time.sleep(1)
-
-#    print("Drop database: " + dbname)
-#    client.drop_database(dbname)
+    while fetch_thread.is_alive():
+        time.sleep(1)
 
     print "Goodbye!"
     sys.exit(0)
